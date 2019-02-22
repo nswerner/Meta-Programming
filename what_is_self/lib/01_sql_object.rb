@@ -80,7 +80,7 @@ class SQLObject
       WHERE
         #{table_name}.id = ?
     SQL
-    
+
     unless result.empty?
       return self.new(*result)
     end
@@ -112,7 +112,19 @@ class SQLObject
   end
 
   def insert
-    # ...
+    # debugger
+    col_names = self.class.columns.join(", ")
+    question_marks = [] 
+    self.attributes.count
+    self.attributes.count.times { question_marks << "?"}
+    question_marks = question_marks.join(", ")
+    # col_names: I took the array of ::columns of the class and joined it with commas.
+    DBConnection.execute(<<-SQL, *col_names, *question_marks)
+      INSERT INTO
+        #{SQLObject.table_name} (?)
+      VALUES
+        ?
+    SQL
   end
 
   def update
